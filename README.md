@@ -1,6 +1,6 @@
-# Thinking With AI
+# "Thinking With AI" Course Creations
 
-Classroom lessons and interactive tools for the "Thinking with AI" course. Each lesson is a single, self-contained HTML file: open it in a browser, project it in class, or upload it to a learning management system.
+Classroom lessons and interactive tools made for "Thinking with AI" course at university. Each lesson is a single, self-contained HTML file.
 
 ## Lessons
 
