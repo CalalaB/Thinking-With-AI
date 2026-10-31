@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbour Lane Roster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-size: 14px; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<style>
+/* Layout: a café counter board — brand band on top, tabbed work area, every view is one column of panels that stacks at phone width */
+:root {
+  --bg: #f3f6f4;
+  --surface: #ffffff;
+  --sunk: #e9eeeb;
+  --ink: #1b2623;
+  --muted: #5b6965;
+  --line: #d6dedb;
+  --accent: #0e5f63;
+  --accent-ink: #ffffff;
+  --accent-soft: #d8ecea;
+  --crema: #9a6a2f;
+  --ok: #1f7a4a;   --ok-soft: #dcf0e3;
+  --bad: #b23a2c;  --bad-soft: #f8e1dd;
+  --warn: #8a6200; --warn-soft: #f6ecd0;
+  --mia: #2c6e4f;   --mia-soft: #d9ede2;
+  --liam: #34509a;  --liam-soft: #dde4f5;
+  --priya: #94406f; --priya-soft: #f2dcea;
+  --focus: #0e5f63;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111715; --surface: #19211f; --sunk: #141b19; --ink: #e4ebe8; --muted: #98a7a2; --line: #2a3532;
+    --accent: #5cc0c3; --accent-ink: #0b1716; --accent-soft: #163536; --crema: #d9a462;
+    --ok: #6fcf98; --ok-soft: #173525; --bad: #f08a7c; --bad-soft: #3a1f1b; --warn: #e3bd5a; --warn-soft: #352c14;
+    --mia: #7fd0a8; --mia-soft: #1b3428; --liam: #9db4f0; --liam-soft: #1f2a45; --priya: #e79bc6; --priya-soft: #3b2032;
+    --focus: #5cc0c3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111715; --surface: #19211f; --sunk: #141b19; --ink: #e4ebe8; --muted: #98a7a2; --line: #2a3532;
+  --accent: #5cc0c3; --accent-ink: #0b1716; --accent-soft: #163536; --crema: #d9a462;
+  --ok: #6fcf98; --ok-soft: #173525; --bad: #f08a7c; --bad-soft: #3a1f1b; --warn: #e3bd5a; --warn-soft: #352c14;
+  --mia: #7fd0a8; --mia-soft: #1b3428; --liam: #9db4f0; --liam-soft: #1f2a45; --priya: #e79bc6; --priya-soft: #3b2032;
+  --focus: #5cc0c3; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; font-weight: 800; }
+h3 { font-size: 1.02rem; font-weight: 600; }
+p { margin: 0; }
+.mono, time { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.86em; }
+.muted { color: var(--muted); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+
+/* Brand band */
+.band { background: var(--surface); border-bottom: 1px solid var(--line); }
+.band .wrap { padding-block: 22px 0; display: grid; gap: 14px; }
+.brand { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+.eyebrow { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--crema); }
+.brand h1 { font-size: clamp(1.7rem, 4.6vw, 2.5rem); font-weight: 800; line-height: 1.05; }
+.brand h1 span { color: var(--accent); }
+.hours-strip { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
+.hours-strip b { color: var(--ink); font-weight: 600; }
+.status { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; font-weight: 600; font-size: 0.88rem; border: 1px solid transparent; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.status.ok { background: var(--ok-soft); color: var(--ok); }
+.status.bad { background: var(--bad-soft); color: var(--bad); }
+
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px 11px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+main.wrap { padding-block: 24px 48px; }
+.view { display: grid; gap: 22px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.lede { max-width: 66ch; color: var(--muted); }
+
+/* Buttons */
+.btn { appearance: none; border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 9px; font-weight: 600; cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--accent-ink); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Staff chips */
+.chip { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; white-space: nowrap; }
+.dot { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 0.68rem; font-weight: 700; flex: none; }
+.s-S01 { --c: var(--mia); --cs: var(--mia-soft); }
+.s-S02 { --c: var(--liam); --cs: var(--liam-soft); }
+.s-S03 { --c: var(--priya); --cs: var(--priya-soft); }
+.dot { background: var(--c); color: var(--surface); }
+
+/* Totals */
+.totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.total { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; background: var(--surface); }
+.total .figs { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 4px 18px; }
+.fig { display: grid; }
+.fig b { font-family: var(--f-display); font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.fig span { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.daybar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.daybar i { height: 6px; border-radius: 3px; background: var(--sunk); }
+.daybar i.on { background: var(--c); }
+
+/* Roster grid */
+.scroll { overflow-x: auto; min-width: 0; }
+table.roster { border-collapse: separate; border-spacing: 8px 6px; width: 100%; min-width: 560px; margin: 0; }
+.roster th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; text-align: left; padding: 0 4px; }
+.roster th.day { text-transform: none; letter-spacing: 0; font-size: 0.95rem; color: var(--ink); width: 110px; }
+.roster th.day small { display: block; font-weight: 400; color: var(--muted); font-family: var(--f-mono); font-size: 0.74rem; }
+.roster td { padding: 0; position: relative; }
+.cell { width: 100%; appearance: none; border: 1px solid transparent; background: var(--cs); color: var(--ink); border-radius: 10px; padding: 9px 11px; display: grid; gap: 2px; text-align: left; cursor: pointer; }
+.cell:hover { border-color: var(--c); }
+.cell .chip { color: var(--c); }
+.cell time { color: var(--muted); }
+td.joins::after { content: ""; position: absolute; right: -9px; top: 50%; width: 10px; height: 4px; margin-top: -2px; background: var(--c); border-radius: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.85rem; color: var(--muted); }
+.legend .bridge { display: inline-block; width: 14px; height: 4px; border-radius: 2px; background: var(--muted); vertical-align: middle; margin-right: 6px; }
+
+/* Notices */
+.notice { border-radius: 12px; padding: 16px 18px; display: grid; gap: 8px; }
+.notice.bad { background: var(--bad-soft); color: var(--ink); border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent); }
+.notice.ok { background: var(--ok-soft); border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent); }
+.notice h3 { color: var(--bad); }
+.notice.ok h3 { color: var(--ok); }
+.notice ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.88rem; color: var(--muted); }
+.checks span::before { content: "✓ "; color: var(--ok); font-weight: 700; }
+
+/* Availability editor */
+table.avail { border-collapse: collapse; width: 100%; min-width: 640px; }
+.avail th, .avail td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.avail thead th { font-size: 0.85rem; font-weight: 600; }
+.avail tbody th { font-weight: 600; width: 120px; }
+.avail tbody th small { display: block; font-weight: 400; color: var(--muted); font-family: var(--f-mono); font-size: 0.74rem; }
+.slot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 8px; border-radius: 9px; border: 1px dashed transparent; }
+.slot.edited { border-color: var(--crema); background: color-mix(in srgb, var(--crema) 8%, transparent); }
+.switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none; }
+.switch input { width: 16px; height: 16px; accent-color: var(--accent); margin: 0; }
+.times { display: inline-flex; align-items: center; gap: 4px; }
+.times input { font-family: var(--f-mono); font-size: 0.82rem; padding: 4px 6px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); width: 6.6em; }
+.times input:invalid, .times input.missing { border-color: var(--bad); }
+.off { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+.edit-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.edit-count { font-size: 0.88rem; color: var(--crema); font-weight: 600; }
+
+/* Cover */
+.picker { display: grid; gap: 10px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { appearance: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.shift-card { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 20px; padding: 16px 18px; border-radius: 12px; background: var(--sunk); }
+.shift-card .big { font-family: var(--f-display); font-size: 1.25rem; font-weight: 800; }
+.cands { display: grid; gap: 10px; }
+.cand { display: grid; grid-template-columns: minmax(150px, 200px) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; }
+.cand .chip { color: var(--c); }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; justify-self: start; }
+.pill.can { background: var(--ok-soft); color: var(--ok); }
+.pill.cant { background: var(--bad-soft); color: var(--bad); }
+.pill.rule { background: var(--sunk); color: var(--muted); font-weight: 600; }
+
+/* How it decides */
+.how { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.how .panel p, .how .panel li { max-width: 62ch; }
+.how ol, .how ul { margin: 0; padding-left: 1.25em; display: grid; gap: 8px; }
+.how li::marker { color: var(--accent); font-weight: 700; }
+.wide { grid-column: 1 / -1; }
+
+/* Tests */
+.test-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+table.tests { border-collapse: collapse; width: 100%; min-width: 760px; }
+.tests th, .tests td { text-align: left; vertical-align: top; padding: 11px 10px; border-bottom: 1px solid var(--line); }
+.tests thead th { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.tests td:first-child { font-family: var(--f-mono); color: var(--muted); font-size: 0.82rem; }
+.tests .kind { display: block; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--crema); }
+.tests .res { font-size: 0.9rem; }
+
+footer.wrap { padding-block: 0 32px; font-size: 0.82rem; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 760px) {
+  .totals { grid-template-columns: minmax(0, 1fr); }
+  .how { grid-template-columns: minmax(0, 1fr); }
+  .cand { grid-template-columns: minmax(0, 1fr) auto; }
+  .cand .why { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="band">
+  <div class="wrap">
+    <div class="brand">
+      <div>
+        <div class="eyebrow">Harbour Lane Café · Problem C · demo with fictional staff</div>
+        <h1>Weekly <span>roster</span> builder</h1>
+      </div>
+      <div id="status" class="status ok" role="status">Checking…</div>
+    </div>
+    <div class="hours-strip"><span>Open <b>Mon–Fri 06:30–20:30</b></span><span><b>Sat–Sun 07:00–20:30</b></span><span>Shifts: Morning to 11:30 · Afternoon 11:30–16:00 · Evening from 16:00</span></div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button class="tab" role="tab" id="tab-roster" data-view="roster" aria-controls="view-roster">Roster</button>
+      <button class="tab" role="tab" id="tab-cover" data-view="cover" aria-controls="view-cover">Cover a shift</button>
+      <button class="tab" role="tab" id="tab-how" data-view="how" aria-controls="view-how">How it decides</button>
+      <button class="tab" role="tab" id="tab-tests" data-view="tests" aria-controls="view-tests">Tests</button>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <!-- ROSTER -->
+  <section class="view" id="view-roster" role="tabpanel" aria-labelledby="tab-roster">
+    <div id="roster-out" class="view"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Availability</h2>
+        <div class="edit-bar">
+          <span id="edit-count" class="edit-count" hidden></span>
+          <button class="btn" id="reset">Reset to spreadsheet</button>
+        </div>
+      </div>
+      <p class="lede">Change when someone can work and the roster above rebuilds straight away. Edits are kept in this browser until you reset them. A shift that starts or ends exactly at the edge of someone's hours counts as inside them.</p>
+      <div class="scroll"><table class="avail" id="avail"></table></div>
+    </div>
+  </section>
+
+  <!-- COVER -->
+  <section class="view" id="view-cover" role="tabpanel" aria-labelledby="tab-cover" hidden>
+    <div class="panel">
+      <div class="panel-head"><h2>Cover a shift</h2></div>
+      <p class="lede">Pick a shift someone can't make. The page checks the other two staff against the café rules, keeping everyone else's shifts where they are, and shows who could step in and why the others can't. You can also click any shift on the Roster tab.</p>
+      <div class="picker">
+        <div class="seg" id="pick-day" role="group" aria-label="Day"></div>
+        <div class="seg" id="pick-shift" role="group" aria-label="Shift"></div>
+      </div>
+    </div>
+    <div id="cover-out" class="view"></div>
+  </section>
+
+  <!-- HOW -->
+  <section class="view" id="view-how" role="tabpanel" aria-labelledby="tab-how" hidden>
+    <div class="how">
+      <div class="panel wide">
+        <h2>How it decides</h2>
+        <p class="lede">Every decision on this page is made by fixed rules in code, so the same availability always gives the same roster. It is the logic from the Problem C Python notebook, rewritten in JavaScript so it runs instantly in the browser. The Tests tab checks the two agree.</p>
+      </div>
+      <div class="panel">
+        <h3>The café's rules</h3>
+        <ol>
+          <li>Every shift is covered by exactly one person.</li>
+          <li>A person can only work a shift that sits entirely inside their hours that day.</li>
+          <li>No one works more than 5 days a week. Any shift on a day counts as a day worked, so a double is one day.</li>
+          <li>No one works more than 2 shifts a day, and two shifts must be back-to-back: Morning + Afternoon or Afternoon + Evening, never Morning + Evening.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>How it builds the roster</h3>
+        <ol>
+          <li>For each day, list every way the three shifts could be shared out under rules 1, 2 and 4.</li>
+          <li>Work through the week a day at a time, trying those options.</li>
+          <li>Skip any option that would take someone past 5 days. If a day has no option left, step back and try something different on an earlier day.</li>
+          <li>Keep the most even roster found: first the fewest shifts given to the busiest person, then the smallest gap between busiest and least busy.</li>
+          <li>Stop early once it finds a perfect split. With 21 shifts and 3 staff, that's 7 each.</li>
+          <li>Check the finished roster against every rule again before showing it.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>When there's no valid roster</h3>
+        <p>The page says why, checking in this order:</p>
+        <ul>
+          <li><b>Nobody free for a shift:</b> no one's hours cover the whole of it.</li>
+          <li><b>A day can't be split:</b> each shift has someone, but only by giving one person 3 shifts or a Morning + Evening.</li>
+          <li><b>The week can't fit:</b> every day works on its own, but someone would need more than 5 days.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Cover a shift</h3>
+        <p>Each other staff member is checked in this order. The first rule that stops them is the reason shown.</p>
+        <ol>
+          <li>Not working that day (day off).</li>
+          <li>Their hours don't cover the whole shift.</li>
+          <li>It would be a 3rd shift that day.</li>
+          <li>It wouldn't be back-to-back with the shift they already have.</li>
+          <li>It would be a 6th day this week.</li>
+        </ol>
+        <p class="muted">Everyone else's shifts stay where they are. People who can cover are listed in staff order, not ranked.</p>
+      </div>
+      <div class="panel wide">
+        <h3>What it doesn't do</h3>
+        <ul>
+          <li>It balances the number of shifts, not hours. A 5-hour weekday morning counts the same as a 4.5-hour evening.</li>
+          <li>It doesn't know about preferences, skills, wages, award rules, breaks or how long someone has between shifts.</li>
+          <li>Only availability can be changed here. The 5-day and 2-shift limits come from the café's spreadsheet.</li>
+          <li>When nobody can cover a shift directly, it doesn't reshuffle the rest of the week to make room. The manager decides what happens next.</li>
+          <li>A roster that follows the rules isn't automatically a fair one for each person. The manager still checks it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTS -->
+  <section class="view" id="view-tests" role="tabpanel" aria-labelledby="tab-tests" hidden>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Tests</h2>
+        <div class="test-summary"><span id="test-score" class="status ok">Not run</span><button class="btn primary" id="run-tests">Run all tests</button></div>
+      </div>
+      <p class="lede">Five roster tests from the Python notebook and four cover tests. Each edits a copy of the spreadsheet's availability, never yours. Expected results were worked out in Python before this page was built, so a pass means the page and the notebook agree.</p>
+      <div class="scroll"><table class="tests" id="tests"></table></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Harbour Lane Café and its staff are fictional. ENAI11-100 Thinking With AI, Skills Assignment 1, Problem C.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+// ---------- Data from SA1_ProblemC_CafeRoster.xlsx ----------
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const SHORT = { Monday:"Mon", Tuesday:"Tue", Wednesday:"Wed", Thursday:"Thu", Friday:"Fri", Saturday:"Sat", Sunday:"Sun" };
+const SHIFT_ORDER = ["Morning","Afternoon","Evening"];
+const OPENING = { Monday:["06:30","20:30"], Tuesday:["06:30","20:30"], Wednesday:["06:30","20:30"], Thursday:["06:30","20:30"], Friday:["06:30","20:30"], Saturday:["07:00","20:30"], Sunday:["07:00","20:30"] };
+const STAFF = [
+  { id:"S01", name:"Mia Chen", first:"Mia", maxDays:5, maxShifts:2 },
+  { id:"S02", name:"Liam O'Connor", first:"Liam", maxDays:5, maxShifts:2 },
+  { id:"S03", name:"Priya Nair", first:"Priya", maxDays:5, maxShifts:2 },
+];
+const BY_ID = Object.fromEntries(STAFF.map(s => [s.id, s]));
+const PEOPLE = STAFF.map(s => s.id);
+const SHIFTS = DAYS.flatMap(day => [
+  { id: SHORT[day] + "-M", day, shift:"Morning",   start: OPENING[day][0], end:"11:30" },
+  { id: SHORT[day] + "-A", day, shift:"Afternoon", start:"11:30", end:"16:00" },
+  { id: SHORT[day] + "-E", day, shift:"Evening",   start:"16:00", end: OPENING[day][1] },
+]);
+const shiftOf = (day, name) => SHIFTS.find(s => s.day === day && s.shift === name);
+
+const A = (on, from, to) => ({ on, from: from || "", to: to || "" });
+const ORIGINAL = {
+  S01: { Monday:A(1,"06:00","16:00"), Tuesday:A(1,"06:00","16:00"), Wednesday:A(0,"06:00","16:00"), Thursday:A(1,"06:00","16:00"), Friday:A(1,"06:00","16:00"), Saturday:A(1,"06:30","16:00"), Sunday:A(1,"06:30","12:00") },
+  S02: { Monday:A(1,"11:00","21:00"), Tuesday:A(0,"11:00","21:00"), Wednesday:A(1,"06:00","21:00"), Thursday:A(1,"11:00","21:00"), Friday:A(1,"11:00","21:00"), Saturday:A(0,"11:00","21:00"), Sunday:A(1,"07:00","21:00") },
+  S03: { Monday:A(0,"11:00","21:00"), Tuesday:A(1,"06:00","21:00"), Wednesday:A(1,"11:00","21:00"), Thursday:A(1,"15:30","21:00"), Friday:A(1,"15:00","21:00"), Saturday:A(1,"07:00","21:00"), Sunday:A(1,"11:00","21:00") },
+};
+// Days marked "No" in the spreadsheet have no times; the editor fills sensible times in case they are switched on.
+for (const p of PEOPLE) for (const d of DAYS) ORIGINAL[p][d].on = !!ORIGINAL[p][d].on;
+const clone = o => JSON.parse(JSON.stringify(o));
+
+// ---------- Engine (same logic as the notebook) ----------
+const mins = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+
+function dataError(av) {
+  for (const s of STAFF) for (const d of DAYS) {
+    const w = av[s.id][d];
+    if (w.on && (!w.from || !w.to)) return `${s.name} is marked available on ${d} but is missing a start or end time.`;
+  }
+  return null;
+}
+function canWork(p, shift, av) {
+  const w = av[p][shift.day];
+  if (!w.on) return false;
+  return mins(w.from) <= mins(shift.start) && mins(shift.end) <= mins(w.to);
+}
+function followsDailyRules(pattern) {
+  for (const p of new Set(pattern)) {
+    const pos = pattern.map((q, i) => q === p ? i : -1).filter(i => i >= 0);
+    if (pos.length > BY_ID[p].maxShifts) return false;
+    if (pos[pos.length - 1] - pos[0] !== pos.length - 1) return false;
+  }
+  return true;
+}
+function product(lists) {
+  return lists.reduce((acc, list) => acc.flatMap(a => list.map(x => [...a, x])), [[]]);
+}
+function dayPatterns(day, av) {
+  const cands = SHIFT_ORDER.map(n => PEOPLE.filter(p => canWork(p, shiftOf(day, n), av)));
+  return product(cands).filter(followsDailyRules);
+}
+function findRoster(patterns) {
+  const total = 3 * DAYS.length;
+  const bestMax = Math.ceil(total / PEOPLE.length), bestGap = total % PEOPLE.length === 0 ? 0 : 1;
+  const count = Object.fromEntries(PEOPLE.map(p => [p, 0]));
+  const days = Object.fromEntries(PEOPLE.map(p => [p, 0]));
+  const chosen = [], explored = new Set();
+  let best = null, bestRoster = null;
+  const score = () => { const c = PEOPLE.map(p => count[p]); const mx = Math.max(...c); return [mx, mx - Math.min(...c)]; };
+  const less = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+  function search(i) {
+    if (i === DAYS.length) {
+      const sc = score();
+      if (best === null || less(sc, best)) { best = sc; bestRoster = chosen.map(x => [...x]); }
+      return best[0] === bestMax && best[1] === bestGap;
+    }
+    const state = i + "|" + PEOPLE.map(p => days[p]).join(",") + "|" + PEOPLE.map(p => count[p]).join(",");
+    if (explored.has(state)) return false;
+    explored.add(state);
+    if (best !== null && Math.max(...PEOPLE.map(p => count[p])) > best[0]) return false;
+    const key = pat => Math.max(...PEOPLE.map(p => count[p] + pat.filter(q => q === p).length));
+    const ordered = [...patterns[DAYS[i]]].sort((a, b) => key(a) - key(b));
+    for (const pat of ordered) {
+      const workers = [...new Set(pat)];
+      if (workers.some(p => days[p] + 1 > BY_ID[p].maxDays)) continue;
+      workers.forEach(p => days[p]++); pat.forEach(p => count[p]++); chosen.push(pat);
+      if (search(i + 1)) return true;
+      chosen.pop(); pat.forEach(p => count[p]--); workers.forEach(p => days[p]--);
+    }
+    return false;
+  }
+  search(0);
+  return bestRoster;
+}
+function explainFailure(av, patterns) {
+  const reasons = [];
+  for (const s of SHIFTS) {
+    if (!PEOPLE.some(p => canWork(p, s, av)))
+      reasons.push(`Nobody is available for the whole of ${s.day} ${s.shift} (${s.start}–${s.end}).`);
+  }
+  for (const day of DAYS) {
+    if (patterns[day].length === 0 && !reasons.some(r => r.startsWith(`Nobody is available for the whole of ${day}`)))
+      reasons.push(`On ${day}, the shifts can't be shared without someone working more than their daily limit or two shifts that aren't back-to-back.`);
+  }
+  if (reasons.length) return reasons;
+  for (const s of STAFF) {
+    const forced = DAYS.filter(d => patterns[d].every(pat => pat.includes(s.id)));
+    if (forced.length > s.maxDays)
+      reasons.push(`${s.name} would have to work ${forced.length} days (${forced.join(", ")}), but the limit is ${s.maxDays}.`);
+  }
+  const needed = DAYS.reduce((n, d) => n + Math.min(...patterns[d].map(pat => new Set(pat).size)), 0);
+  const capacity = STAFF.reduce((n, s) => n + Math.min(s.maxDays, DAYS.filter(d => patterns[d].some(pat => pat.includes(s.id))).length), 0);
+  if (needed > capacity)
+    reasons.push(`Covering the week needs at least ${needed} person-days, but staff can only offer ${capacity} within their availability and day limits.`);
+  if (!reasons.length)
+    reasons.push("Every day can be covered on its own, but no combination of days keeps everyone within their weekly day limit.");
+  return reasons;
+}
+function checkRoster(roster, av) {
+  const problems = [];
+  roster.forEach((pat, di) => {
+    pat.forEach((p, si) => { if (!canWork(p, shiftOf(DAYS[di], SHIFT_ORDER[si]), av)) problems.push(`${BY_ID[p].name} not available ${DAYS[di]} ${SHIFT_ORDER[si]}`); });
+    if (!followsDailyRules(pat)) problems.push(`${DAYS[di]} breaks the daily rules`);
+  });
+  for (const s of STAFF) { const n = roster.filter(pat => pat.includes(s.id)).length; if (n > s.maxDays) problems.push(`${s.name} works ${n} days`); }
+  return problems;
+}
+function buildRoster(av) {
+  const err = dataError(av);
+  if (err) return { ok:false, error: err };
+  const patterns = Object.fromEntries(DAYS.map(d => [d, dayPatterns(d, av)]));
+  const roster = findRoster(patterns);
+  if (!roster) return { ok:false, reasons: explainFailure(av, patterns) };
+  const problems = checkRoster(roster, av);
+  if (problems.length) return { ok:false, error: "The roster failed its own check: " + problems.join("; ") };
+  return { ok:true, roster };
+}
+const hoursOf = s => (mins(s.end) - mins(s.start)) / 60;
+function totals(roster) {
+  return STAFF.map(s => {
+    const worked = DAYS.map((d, i) => roster[i].includes(s.id));
+    let shifts = 0, hours = 0;
+    roster.forEach((pat, di) => pat.forEach((p, si) => { if (p === s.id) { shifts++; hours += hoursOf(shiftOf(DAYS[di], SHIFT_ORDER[si])); } }));
+    return { s, worked, days: worked.filter(Boolean).length, shifts, hours };
+  });
+}
+// Cover a shift: checks run in order; the first that applies is the reason.
+function coverOptions(av, roster, di, si) {
+  const day = DAYS[di], shift = shiftOf(day, SHIFT_ORDER[si]), owner = roster[di][si];
+  return STAFF.filter(s => s.id !== owner).map(s => {
+    const w = av[s.id][day];
+    if (!w.on) return { s, code:"unavailable", why: `${s.first} isn't available on ${day}.` };
+    if (!canWork(s.id, shift, av)) return { s, code:"window", why: `${s.first} is available ${w.from}–${w.to}, but the shift runs ${shift.start}–${shift.end}.` };
+    const mine = roster[di].map((q, i) => q === s.id ? i : -1).filter(i => i >= 0);
+    const after = [...mine, si].sort((a, b) => a - b);
+    const names = mine.map(i => SHIFT_ORDER[i]).join(" and ");
+    if (after.length > s.maxShifts) return { s, code:"too_many", why: `${s.first} already works ${names} on ${day}. This would be ${after.length} shifts; the limit is ${s.maxShifts}.` };
+    if (after[after.length - 1] - after[0] !== after.length - 1) return { s, code:"not_back_to_back", why: `${s.first} already works ${names} on ${day}. ${after.map(i => SHIFT_ORDER[i]).join(" + ")} isn't back-to-back.` };
+    const daysWorked = roster.filter(pat => pat.includes(s.id)).length;
+    if (!mine.length && daysWorked >= s.maxDays) return { s, code:"max_days", why: `${s.first} already works ${daysWorked} days this week. ${day} would be day ${daysWorked + 1}; the limit is ${s.maxDays}.` };
+    const note = mine.length ? `Would make a double: ${after.map(i => SHIFT_ORDER[i]).join(" + ")} on ${day}.` : `Adds ${day} as day ${daysWorked + 1} of ${s.maxDays}.`;
+    return { s, code:"can", why: note };
+  });
+}
+
+// ---------- State ----------
+const STORE = "harbour-lane-availability-v1";
+function loadAv() {
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (!raw) return clone(ORIGINAL);
+    const data = JSON.parse(raw), av = clone(ORIGINAL);
+    for (const p of PEOPLE) for (const d of DAYS) {
+      const w = data?.[p]?.[d];
+      if (w && typeof w.on === "boolean" && typeof w.from === "string" && typeof w.to === "string") av[p][d] = { on: w.on, from: w.from, to: w.to };
+    }
+    return av;
+  } catch { return clone(ORIGINAL); }
+}
+function saveAv() {
+  try { if (editedCount() === 0) localStorage.removeItem(STORE); else localStorage.setItem(STORE, JSON.stringify(av)); } catch {}
+}
+let av = loadAv();
+let result = null;
+let pick = { di: 3, si: 1 };
+const same = (a, b) => a.on === b.on && (!a.on || (a.from === b.from && a.to === b.to));
+const editedCount = () => PEOPLE.reduce((n, p) => n + DAYS.filter(d => !same(av[p][d], ORIGINAL[p][d])).length, 0);
+
+// ---------- Rendering ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const initials = s => s.name.split(/\s+/).map(w => w[0]).join("").slice(0, 2);
+const chip = s => `<span class="chip s-${s.id}"><span class="dot" aria-hidden="true">${esc(initials(s))}</span>${esc(s.name)}</span>`;
+
+function renderAll() {
+  result = buildRoster(av);
+  renderStatus(); renderRoster(); renderCover();
+  const n = editedCount();
+  $("edit-count").hidden = n === 0;
+  $("edit-count").textContent = n === 1 ? "1 day edited" : `${n} days edited`;
+  $("reset").disabled = n === 0;
+}
+function renderStatus() {
+  const el = $("status");
+  if (result.ok) {
+    const t = totals(result.roster).map(x => x.shifts);
+    el.className = "status ok"; el.textContent = `Valid roster · shifts ${t.join(" · ")}`;
+  } else { el.className = "status bad"; el.textContent = "No valid roster"; }
+}
+function renderRoster() {
+  const out = $("roster-out");
+  if (!result.ok) {
+    const items = result.error ? [result.error] : result.reasons;
+    out.innerHTML = `<div class="notice bad" role="alert"><h3>${result.error ? "Availability needs fixing" : "No valid roster exists"}</h3>
+      <ul>${items.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+      <p class="muted">Change the availability below, or reset it to the spreadsheet.</p></div>`;
+    return;
+  }
+  const T = totals(result.roster);
+  const cards = T.map(t => `<div class="total s-${t.s.id}">${chip(t.s)}
+      <div class="figs"><div class="fig"><b>${t.days}<small class="muted"> / ${t.s.maxDays}</small></b><span>Days</span></div>
+      <div class="fig"><b>${t.shifts}</b><span>Shifts</span></div><div class="fig"><b>${t.hours.toFixed(1)}</b><span>Hours</span></div></div>
+      <div class="daybar" aria-label="Days worked">${t.worked.map((w, i) => `<i class="${w ? "on" : ""}" title="${DAYS[i]}${w ? ": working" : ": off"}"></i>`).join("")}</div></div>`).join("");
+  const rows = result.roster.map((pat, di) => {
+    const day = DAYS[di];
+    return `<tr><th class="day" scope="row">${day}<small>${OPENING[day][0]}–${OPENING[day][1]}</small></th>${pat.map((p, si) => {
+      const s = shiftOf(day, SHIFT_ORDER[si]), joins = si < 2 && pat[si + 1] === p;
+      return `<td class="s-${p}${joins ? " joins" : ""}"><button class="cell" data-di="${di}" data-si="${si}" aria-label="${esc(BY_ID[p].name)}, ${day} ${s.shift}, ${s.start} to ${s.end}. Find cover">
+        <span class="chip">${esc(BY_ID[p].name)}</span><time>${s.start}–${s.end}</time></button></td>`;
+    }).join("")}</tr>`;
+  }).join("");
+  out.innerHTML = `
+    <div class="totals">${cards}</div>
+    <div class="panel">
+      <div class="panel-head"><h2>This week</h2><div class="legend"><span><i class="bridge"></i>double (back-to-back shifts)</span><span>Click a shift to find cover</span></div></div>
+      <div class="scroll"><table class="roster"><thead><tr><th></th>${SHIFT_ORDER.map(n => `<th scope="col">${n}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="checks"><span>Every shift covered once</span><span>Inside everyone's hours</span><span>No one over 5 days</span><span>Max 2 shifts a day, back-to-back</span></div>
+    </div>`;
+  out.querySelectorAll(".cell").forEach(b => b.addEventListener("click", () => {
+    pick = { di: +b.dataset.di, si: +b.dataset.si }; go("cover");
+  }));
+}
+function renderEditor() {
+  const head = `<thead><tr><th scope="col">Day</th>${STAFF.map(s => `<th scope="col">${chip(s)}</th>`).join("")}</tr></thead>`;
+  const body = DAYS.map(d => `<tr><th scope="row">${d}<small>open ${OPENING[d][0]}–${OPENING[d][1]}</small></th>${STAFF.map(s => {
+    const id = `${s.id}-${SHORT[d]}`;
+    return `<td><div class="slot" id="slot-${id}">
+      <label class="switch"><input type="checkbox" id="on-${id}" data-p="${s.id}" data-d="${d}" data-f="on">Available</label>
+      <span class="times" id="times-${id}"><input type="time" id="from-${id}" data-p="${s.id}" data-d="${d}" data-f="from" aria-label="${esc(s.name)} ${d} from">
+      <span class="muted">–</span><input type="time" id="to-${id}" data-p="${s.id}" data-d="${d}" data-f="to" aria-label="${esc(s.name)} ${d} to"></span>
+      <span class="off" id="off-${id}">Day off</span></div></td>`;
+  }).join("")}</tr>`).join("");
+  $("avail").innerHTML = head + `<tbody>${body}</tbody>`;
+  $("avail").addEventListener("input", onEdit);
+  $("avail").addEventListener("change", onEdit);
+  syncEditor();
+}
+function syncEditor() {
+  for (const p of PEOPLE) for (const d of DAYS) {
+    const id = `${p}-${SHORT[d]}`, w = av[p][d];
+    $(`on-${id}`).checked = w.on;
+    $(`from-${id}`).value = w.from; $(`to-${id}`).value = w.to;
+    $(`from-${id}`).classList.toggle("missing", w.on && !w.from);
+    $(`to-${id}`).classList.toggle("missing", w.on && !w.to);
+    $(`times-${id}`).hidden = !w.on; $(`off-${id}`).hidden = w.on;
+    $(`slot-${id}`).classList.toggle("edited", !same(w, ORIGINAL[p][d]));
+  }
+}
+function onEdit(e) {
+  const t = e.target; if (!t.dataset || !t.dataset.f) return;
+  const w = av[t.dataset.p][t.dataset.d];
+  if (t.dataset.f === "on") w.on = t.checked; else w[t.dataset.f] = t.value;
+  saveAv(); syncEditor(); renderAll();
+}
+function renderPicker() {
+  $("pick-day").innerHTML = DAYS.map((d, i) => `<button data-di="${i}" aria-pressed="${i === pick.di}">${SHORT[d]}</button>`).join("");
+  $("pick-shift").innerHTML = SHIFT_ORDER.map((n, i) => `<button data-si="${i}" aria-pressed="${i === pick.si}">${n}</button>`).join("");
+}
+function renderCover() {
+  renderPicker();
+  const out = $("cover-out");
+  if (!result.ok) {
+    out.innerHTML = `<div class="notice bad"><h3>There's no roster to cover yet</h3><p>The current availability doesn't produce a valid roster. Fix it on the Roster tab first.</p></div>`;
+    return;
+  }
+  const day = DAYS[pick.di], s = shiftOf(day, SHIFT_ORDER[pick.si]), owner = BY_ID[result.roster[pick.di][pick.si]];
+  const opts = coverOptions(av, result.roster, pick.di, pick.si);
+  const can = opts.filter(o => o.code === "can");
+  const head = can.length
+    ? `<div class="notice ok"><h3>${can.length === 1 ? "1 person can cover" : `${can.length} people can cover`}</h3><p>${can.map(o => esc(o.s.name)).join(" and ")}. The manager decides who to ask.</p></div>`
+    : `<div class="notice bad" role="alert"><h3>Nobody can cover this shift</h3><p>Each person's reason is below. Covering it would mean changing other shifts or the café's rules.</p></div>`;
+  out.innerHTML = `
+    <div class="shift-card"><div><div class="big">${day} ${s.shift}</div><time>${s.start}–${s.end} · ${hoursOf(s).toFixed(1)} h</time></div>
+      <div><span class="muted">Rostered: </span>${chip(owner)}</div></div>
+    ${head}
+    <div class="cands">${opts.map(o => `<div class="cand s-${o.s.id}">${chip(o.s)}
+      <span class="pill ${o.code === "can" ? "can" : "cant"}">${o.code === "can" ? "Can cover" : "Can't cover"}</span>
+      <span class="why">${esc(o.why)}</span></div>`).join("")}</div>`;
+}
+$("pick-day").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { pick.di = +b.dataset.di; renderCover(); } });
+$("pick-shift").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { pick.si = +b.dataset.si; renderCover(); } });
+$("reset").addEventListener("click", () => { av = clone(ORIGINAL); saveAv(); syncEditor(); renderAll(); toast("Availability reset to the spreadsheet"); });
+
+let toastTimer;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200); }
+
+// ---------- Tests (expected results from the Python notebook) ----------
+const R = s => s.split(" ").map(d => d.split(","));
+const NB_NORMAL = R("S01,S01,S02 S01,S03,S03 S02,S02,S03 S01,S02,S03 S01,S01,S02 S01,S03,S03 S02,S02,S03");
+const NB_FREE   = R("S01,S02,S03 S01,S01,S02 S02,S03,S03 S01,S01,S03 S02,S02,S03 S01,S02,S02 S01,S03,S03");
+function edited(fn) { const a = clone(ORIGINAL); fn(a); return a; }
+const allFree = a => { for (const p of PEOPLE) for (const d of DAYS) a[p][d] = { on:true, from:"06:00", to:"21:00" }; };
+const fmtRoster = r => r.map((pat, i) => `${SHORT[DAYS[i]]}: ${pat.map(p => BY_ID[p].first).join(" / ")}`).join("; ");
+const TESTS = [
+  { kind:"Normal", name:"Spreadsheet as given", setup:"No changes",
+    expected:"Roster found, identical to the notebook's; 7 shifts each", av:() => clone(ORIGINAL), roster: NB_NORMAL },
+  { kind:"Normal", name:"Everyone free all week", setup:"All staff available 06:00–21:00 every day",
+    expected:"Roster found, identical to the notebook's; 7 shifts each", av:() => edited(allFree), roster: NB_FREE },
+  { kind:"Edge", name:"One minute late", setup:"Liam available from 07:01 on Sunday instead of 07:00",
+    expected:"No roster: Mia would have to work 6 days", av:() => edited(a => { a.S02.Sunday.from = "07:01"; }),
+    reasons:["Mia Chen would have to work 6 days (Monday, Tuesday, Thursday, Friday, Saturday, Sunday), but the limit is 5."] },
+  { kind:"Edge", name:"Gap in cover", setup:"Liam and Priya both finish at 16:00 on Sunday",
+    expected:"No roster: nobody for Sunday evening", av:() => edited(a => { a.S02.Sunday.to = "16:00"; a.S03.Sunday.to = "16:00"; }),
+    reasons:["Nobody is available for the whole of Sunday Evening (16:00–20:30)."] },
+  { kind:"Edge", name:"Only Priya on Tuesday", setup:"Mia and Liam unavailable on Tuesday",
+    expected:"No roster: Tuesday can't be split", av:() => edited(a => { a.S01.Tuesday.on = false; a.S02.Tuesday.on = false; }),
+    reasons:["On Tuesday, the shifts can't be shared without someone working more than their daily limit or two shifts that aren't back-to-back."] },
+  { kind:"Cover", name:"Thursday afternoon (Liam)", setup:"Spreadsheet roster", cover:[3,1], av:() => clone(ORIGINAL),
+    expected:"Mia can cover (double); Priya can't (hours)", codes:{ S01:"can", S03:"window" } },
+  { kind:"Cover", name:"Friday evening (Liam)", setup:"Spreadsheet roster", cover:[4,2], av:() => clone(ORIGINAL),
+    expected:"Nobody: Mia (hours), Priya (already 5 days)", codes:{ S01:"window", S03:"max_days" } },
+  { kind:"Cover", name:"Sunday evening (Priya)", setup:"Spreadsheet roster", cover:[6,2], av:() => clone(ORIGINAL),
+    expected:"Nobody: Mia (hours), Liam (would be 3 shifts)", codes:{ S01:"window", S02:"too_many" } },
+  { kind:"Cover", name:"Monday evening (Priya)", setup:"Everyone-free roster", cover:[0,2], av:() => edited(allFree),
+    expected:"Liam can cover; Mia can't (Morning + Evening isn't back-to-back)", codes:{ S01:"not_back_to_back", S02:"can" } },
+];
+const CODE_TEXT = { can:"can cover", unavailable:"day off", window:"hours", too_many:"3rd shift", not_back_to_back:"not back-to-back", max_days:"6th day" };
+function runTest(t) {
+  const res = buildRoster(t.av());
+  if (t.roster) {
+    if (!res.ok) return { pass:false, actual:"No roster: " + (res.error || res.reasons.join(" ")) };
+    const match = JSON.stringify(res.roster) === JSON.stringify(t.roster);
+    const shifts = totals(res.roster).map(x => x.shifts).join(" / ");
+    return { pass: match, actual: `Roster found${match ? ", matches notebook" : ", differs from notebook"}; shifts ${shifts}`, detail: fmtRoster(res.roster) };
+  }
+  if (t.reasons) {
+    if (res.ok) return { pass:false, actual:"Roster found (expected none)" };
+    const got = res.error ? [res.error] : res.reasons;
+    return { pass: JSON.stringify(got) === JSON.stringify(t.reasons), actual: "No roster: " + got.join(" ") };
+  }
+  if (!res.ok) return { pass:false, actual:"No roster to cover" };
+  const opts = coverOptions(t.av(), res.roster, t.cover[0], t.cover[1]);
+  const got = Object.fromEntries(opts.map(o => [o.s.id, o.code]));
+  return { pass: JSON.stringify(got) === JSON.stringify(t.codes), actual: opts.map(o => `${o.s.first}: ${CODE_TEXT[o.code]}`).join("; ") };
+}
+function runTests() {
+  const rows = TESTS.map((t, i) => ({ t, i, r: runTest(t) }));
+  const passed = rows.filter(x => x.r.pass).length;
+  $("test-score").className = "status " + (passed === rows.length ? "ok" : "bad");
+  $("test-score").textContent = `${passed} of ${rows.length} passed`;
+  $("tests").innerHTML = `<thead><tr><th>#</th><th>Test</th><th>Setup</th><th>Expected</th><th>Result</th><th></th></tr></thead><tbody>${rows.map(({ t, i, r }) => `
+    <tr><td>${String(i + 1).padStart(2, "0")}</td><td><span class="kind">${t.kind}</span>${esc(t.name)}</td><td>${esc(t.setup)}</td><td>${esc(t.expected)}</td>
+    <td class="res">${esc(r.actual)}${r.detail ? `<br><span class="muted mono">${esc(r.detail)}</span>` : ""}</td>
+    <td><span class="pill ${r.pass ? "can" : "cant"}">${r.pass ? "Pass" : "Fail"}</span></td></tr>`).join("")}</tbody>`;
+}
+$("run-tests").addEventListener("click", () => { runTests(); toast("Tests run"); });
+
+// ---------- Tabs ----------
+const VIEWS = ["roster", "cover", "how", "tests"];
+function show(view) {
+  if (!VIEWS.includes(view)) view = "roster";
+  VIEWS.forEach(v => { $("view-" + v).hidden = v !== view; $("tab-" + v).setAttribute("aria-selected", v === view); });
+}
+function go(view) { if (location.hash !== "#" + view) location.hash = view; else show(view); }
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => go(b.dataset.view)));
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+
+renderEditor();
+renderAll();
+runTests();
+show(location.hash.slice(1));
+</script>
+</body>
+</html>
